@@ -21,14 +21,12 @@ class Worker:
         self.function_executor = FunctionExecutor(qm=self.qm, db=self.db, config=self.config)
         self.execution_threshold = timedelta(hours=24)
         self.result_publisher = None
-        redis_config = config.redis
         self.redis_client = redis.Redis(
-            host=redis_config.host,
-            port=redis_config.port,
-            db=redis_config.db,
-            password=redis_config.password
+            host=config.redis.host,
+            port=config.redis.port,
+            db=config.redis.db,
+            password=config.redis.password
         )
-
 
     async def start(self):
         logger.info(f"Starting worker (Worker ID: {self.worker_id})...")
@@ -59,7 +57,6 @@ class Worker:
         return True
 
     async def message_handler(self, msg):
-        #logger.debug(f"Incoming message:\nObject Type: {type(msg)}\nObject:\n{json.dumps(msg, indent=4)}")
         try:
             if not msg.get("force", False):
                 if not await self.should_execute(msg):
@@ -77,7 +74,6 @@ class Worker:
                     force_execution=msg.get("force_execution", False)
                 ):
                 pass
-                #logger.debug(f"Function execution result: {result}")
                     
         except Exception as e:
             logger.error(f"Error processing message: {e}")
@@ -96,8 +92,4 @@ async def main():
         await worker.stop()
 
 if __name__ == "__main__":
-    # Configure logger
-    logger.remove()
-    logger.add(sys.stdout, level="DEBUG", format="<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <level>{message}</level>")
-    
     asyncio.run(main())

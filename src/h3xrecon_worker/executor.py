@@ -59,7 +59,13 @@ class FunctionExecutor():
                 logger.error(f"Error loading plugin '{module_name}': {e}", exc_info=True)
         logger.debug(f"Current function_map: {[key for key in self.function_map.keys()]}")
     
-    async def execute_function(self, func_name: str, target: str, program_id: int, execution_id: str, timestamp: str, force_execution: bool = False) -> AsyncGenerator[Dict[str, Any], None]:
+    async def execute_function(self, 
+                              func_name: str, 
+                              target: str, 
+                              program_id: int, 
+                              execution_id: str, 
+                              timestamp: str, 
+                              force_execution: bool = False) -> AsyncGenerator[Dict[str, Any], None]:
         if func_name not in self.function_map:
             logger.error(f"Function '{func_name}' not found in function_map.")
             return
@@ -82,10 +88,10 @@ class FunctionExecutor():
                 # Publish each reverse_resolve_ip task
                 message["program_id"] = program_id
                 message["execution_id"] = execution_id
-                #await self.qm.publish_message(subject="function.execute", stream="FUNCTION_EXECUTE", message=message)
+                await self.qm.publish_message(subject="function.execute", stream="FUNCTION_EXECUTE", message=message)
                 yield message
         else:
-            async for result in plugin_execute(target):
+            async for result in plugin_execute(target, program_id, execution_id):
                 logger.debug(result)
                 if isinstance(result, str):
                     result = json.loads(result)
