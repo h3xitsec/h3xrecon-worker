@@ -9,7 +9,7 @@ class FindSubdomainsCTFR(ReconPlugin):
     def name(self) -> str:
         return os.path.splitext(os.path.basename(__file__))[0]
 
-    async def execute(self, target: str) -> AsyncGenerator[Dict[str, Any], None]:
+    async def execute(self, target: str, program_id: int = None, execution_id: str = None) -> AsyncGenerator[Dict[str, Any], None]:
         logger.info(f"Running {self.name} on {target}")
         command = f"""
             #!/bin/bash
