@@ -1,5 +1,6 @@
 from typing import AsyncGenerator, Dict, Any
 from h3xrecon_worker.plugins.base import ReconPlugin
+from h3xrecon_core import *
 from loguru import logger
 import asyncio
 import os
@@ -23,17 +24,49 @@ class SubdomainPermutation(ReconPlugin):
             stderr=asyncio.subprocess.PIPE,
             shell=True
         )
+        to_test = []
         async for output in self._read_subprocess_output(process):
             # Prepare the message for reverse_resolve_ip
-            message = {
-                "function": "resolve_domain",
-                "params": {
-                    "target": output
-                }
-            }
-            yield message
+            to_test.append(output)
+
+        message = {
+            "function_name": "resolve_domain",
+            "target": target,
+            "to_test": to_test
+        }
+        yield message
 
         await process.wait()
     
-    async def process_output(self, output_msg: Dict[str, Any]):
-        pass
+    async def process_output(self, output_msg: Dict[str, Any]) -> Dict[str, Any]:
+        self.config = Config()
+        self.qm = QueueManager(self.config.nats)
+        self.db = DatabaseManager(self.config)
+        is_catchall = await self.db.execute_query("SELECT is_catchall FROM domains WHERE domain = $1", output_msg.get("output").get("target"))
+        logger.info(is_catchall)
+        if is_catchall:
+            logger.info(f"Target {output_msg.get('output').get('target')} is a dns catchall domain, skipping subdomain permutation processing.")
+        elif is_catchall is None:
+            logger.info(f"Failed to check if target {output_msg.get('output').get('target')} is a dns catchall domain.")
+            await self.qm.publish_message(
+                subject="function.execute",
+                stream="FUNCTION_EXECUTE",
+                message={
+                    "function": "test_domain_catchall",
+                    "program_id": output_msg.get("program_id"),
+                    "params": {"target": output_msg.get("output").get("target")},
+                    "force": False
+                }
+            )
+        else:
+            for t in output_msg.get("output").get("to_test"):
+                await self.qm.publish_message(
+                    subject="function.execute",
+                    stream="FUNCTION_EXECUTE",
+                    message={
+                        "function": output_msg.get("output").get("function_name"),
+                        "program_id": output_msg.get("program_id"),
+                        "params": {"target": t},
+                        "force": False
+                    }
+                )
