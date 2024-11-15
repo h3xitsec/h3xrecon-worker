@@ -1,4 +1,5 @@
 from typing import AsyncGenerator, Dict, Any
+from h3xrecon_core import *
 from h3xrecon_worker.plugins.base import ReconPlugin
 from loguru import logger
 import asyncio
@@ -50,3 +51,19 @@ class PortScan(ReconPlugin):
         if extraports is not None:
             count = extraports.get('count')
             logger.info(f"Total filtered ports: {count}")
+    
+    async def process_output(self, output_msg: Dict[str, Any]):
+        self.config = Config()
+        self.db_manager = DatabaseManager(self.config.database.to_dict())
+        self.qm = QueueManager(self.config.nats)
+        for service in output_msg.get('output', []):
+            service_msg = {
+                "program_id": output_msg.get('program_id'),
+                "data_type": "service",
+                "data": [{
+                    "ip": service.get('ip'),
+                    "port": int(service.get('port')),
+                    "protocol": service.get('protocol')
+                }]
+            }
+            await self.qm.publish_message(subject="recon.data", stream="RECON_DATA", message=service_msg)

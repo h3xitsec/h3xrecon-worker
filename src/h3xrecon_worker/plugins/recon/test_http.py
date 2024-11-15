@@ -1,5 +1,6 @@
 from typing import AsyncGenerator, Dict, Any
 from h3xrecon_worker.plugins.base import ReconPlugin
+from h3xrecon_core import *
 from loguru import logger
 import asyncio
 import json
@@ -52,3 +53,47 @@ class TestHTTP(ReconPlugin):
                 logger.error(f"Failed to parse JSON output: {e}")
 
         await process.wait()
+    
+    async def process_output(self, output_msg: Dict[str, Any]):
+        self.config = Config()
+        self.db_manager = DatabaseManager(self.config.database.to_dict())
+        self.qm = QueueManager(self.config.nats)
+        logger.debug(f"Incoming message:\nObject Type: {type(output_msg)}\nObject:\n{json.dumps(output_msg, indent=4)}")
+        if not await self.db_manager.check_domain_regex_match(output_msg.get('source').get('target'), output_msg.get('program_id')):
+            logger.info(f"Domain {output_msg.get('source').get('target')} is not part of program {output_msg.get('program_id')}. Skipping processing.")
+        else:
+            logger.info(f"Domain {output_msg.get('source').get('target')} is part of program {output_msg.get('program_id')}. Sending to data processor.")
+            url_msg = {
+                "program_id": output_msg.get('program_id'),
+                "data_type": "url",
+                "data": [{
+                    "url": output_msg.get('output', {}).get('url'),
+                    "httpx_data": output_msg.get('output', {})
+                }]
+            }
+            await self.qm.publish_message(subject="recon.data", stream="RECON_DATA", message=url_msg)
+            # await self.nc.publish(output_msg.get('recon_data_queue', "recon.data"), json.dumps(url_msg).encode())
+            domains_to_add = (output_msg.get('output', {}).get('body_domains', []) + 
+                              output_msg.get('output', {}).get('body_fqdn', []) + 
+                              output_msg.get('output', {}).get('tls', {}).get('subject_an', []))
+            logger.debug(domains_to_add)
+            for domain in domains_to_add:
+                if domain:
+                    domain_msg = {
+                        "program_id": output_msg.get('program_id'),
+                        "data_type": "domain",
+                        "data": [domain]
+                    }
+                    await self.qm.publish_message(subject="recon.data", stream="RECON_DATA", message=domain_msg)
+
+            service_msg = {
+                "program_id": output_msg.get('program_id'),
+                "data_type": "service",
+                "data": [{
+                    "ip": output_msg.get('output').get('host'),
+                    "port": int(output_msg.get('output').get('port')),
+                    "protocol": "tcp",
+                    "service": output_msg.get('output').get('scheme')
+                }]
+            }
+            await self.qm.publish_message(subject="recon.data", stream="RECON_DATA", message=service_msg)

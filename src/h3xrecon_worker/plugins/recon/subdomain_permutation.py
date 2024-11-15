@@ -34,3 +34,6 @@ class SubdomainPermutation(ReconPlugin):
             yield message
 
         await process.wait()
+    
+    async def process_output(self, output_msg: Dict[str, Any]):
+        pass

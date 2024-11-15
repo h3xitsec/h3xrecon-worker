@@ -1,7 +1,8 @@
 import os
 from typing import Dict, Any, AsyncGenerator
 from h3xrecon_worker.plugins.base import ReconPlugin
-from h3xrecon_core import QueueManager
+from h3xrecon_core import *
+from loguru import logger
 
 
 class FindSubdomainsPlugin(ReconPlugin):
@@ -18,36 +19,50 @@ class FindSubdomainsPlugin(ReconPlugin):
         """
         self.program_id = program_id
         self.execution_id = execution_id
-        self.qm = QueueManager()
+        self.config = Config()
+        self.qm = QueueManager(self.config.nats)
         # List of subdomain discovery tools to trigger
         subdomain_tools = [
             "find_subdomains_subfinder",
             "find_subdomains_ctfr"
         ]
-        
-        # Send jobs for each tool
+        # Send jobs for each tool and yield dispatched job information
         for tool in subdomain_tools:
-            await self.send_job(
-                function_name=tool,
-                target=target,
-            )
-            # Yield a status message for each dispatched job
-            yield {}
+            job = {
+                "function_name": tool,
+                "target": target,
+            }
+            logger.info(f"Dispatching job: {job}")
+            logger.debug(f"Dispatching job: {job}")
+            
+            yield job
     
-    async def send_job(self, function_name: str, target: str, options: Dict[str, Any] = None) -> None:
-        """
-        Helper method to send a job to the worker queue
-        """
-        job_data = {
-            "force": False,
+    async def send_job(self, function_name: str, program_id: int, target: str, force: bool):
+        """Send a job to the worker using QueueManager"""
+
+        message = {
+            "force": force,
             "function": function_name,
-            "program_id": self.program_id,
+            "program_id": program_id,
             "params": {"target": target}
         }
-        
-        # Use the NATS client to publish the job
+        logger.info(self.config.nats)
         await self.qm.publish_message(
             subject="function.execute",
             stream="FUNCTION_EXECUTE",
-            message=job_data
+            message=message
+        )
+    
+    async def process_output(self, output_msg: Dict[str, Any]) -> Dict[str, Any]:
+        self.config = Config()
+        self.qm = QueueManager(self.config.nats)
+        await self.qm.publish_message(
+            subject="function.execute",
+            stream="FUNCTION_EXECUTE",
+            message={
+                "function": output_msg.get("output").get("function_name"),
+                "program_id": output_msg.get("program_id"),
+                "params": {"target": output_msg.get("output").get("target")},
+                "force": False
+            }
         )

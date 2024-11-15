@@ -1,5 +1,6 @@
 from typing import AsyncGenerator, Dict, Any
 from h3xrecon_worker.plugins.base import ReconPlugin
+from h3xrecon_core import *
 from loguru import logger
 import asyncio
 import os
@@ -28,11 +29,23 @@ class ExpandCIDR(ReconPlugin):
         async for output in self._read_subprocess_output(process):
             # Prepare the message for reverse_resolve_ip
             message = {
-                "function": "reverse_resolve_ip",
-                "params": {
-                    "target": output
-                }
+                "function_name": "reverse_resolve_ip",
+                "target": output
             }
             yield message
 
         await process.wait()
+    
+    async def process_output(self, output_msg: Dict[str, Any]) -> Dict[str, Any]:
+        self.config = Config()
+        self.qm = QueueManager(self.config.nats)
+        await self.qm.publish_message(
+            subject="function.execute",
+            stream="FUNCTION_EXECUTE",
+            message={
+                "function": output_msg.get("output").get("function_name"),
+                "program_id": output_msg.get("program_id"),
+                "params": {"target": output_msg.get("output").get("target")},
+                "force": False
+            }
+        )

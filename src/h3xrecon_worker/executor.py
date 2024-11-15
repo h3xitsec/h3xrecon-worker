@@ -71,9 +71,9 @@ class FunctionExecutor():
             return
 
         plugin_execute = self.function_map[func_name]
-        task_sending_functions = ["expand_cidr", "subdomain_permutation"]
+        task_sending_functions = ["subdomain_permutation"]
         if func_name in task_sending_functions:
-            if func_name == "subdomain_permutation":
+            if func_name == "ddd":
                 # Check if the target is a dns catchall domain
                 logger.debug("Checking if the target is a dns catchall domain")
                 is_catchall = await self.db.execute_query("SELECT is_catchall FROM domains WHERE domain = $1", target)
@@ -92,18 +92,16 @@ class FunctionExecutor():
                 yield message
         else:
             async for result in plugin_execute(target, program_id, execution_id):
-                logger.debug(result)
                 if isinstance(result, str):
                     result = json.loads(result)
-                
                 output_data = {
                     "program_id": program_id,
                     "execution_id": execution_id,
-                    "source": {"function": func_name, "target": target},
+                    "source": {"function": func_name, "target": target, "force": force_execution},
                     "output": result,
                     "timestamp": timestamp
                 }
-                
+                logger.info(f"Publishing message: {output_data}")
                 # Publish the result
                 await self.qm.publish_message(subject="function.output", stream="FUNCTION_OUTPUT", message=output_data)
 
