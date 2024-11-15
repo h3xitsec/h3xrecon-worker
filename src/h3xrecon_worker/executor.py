@@ -71,39 +71,19 @@ class FunctionExecutor():
             return
 
         plugin_execute = self.function_map[func_name]
-        task_sending_functions = ["subdomain_permutation"]
-        if func_name in task_sending_functions:
-            if func_name == "ddd":
-                # Check if the target is a dns catchall domain
-                logger.debug("Checking if the target is a dns catchall domain")
-                is_catchall = await self.db.execute_query("SELECT is_catchall FROM domains WHERE domain = $1", target)
-                logger.info(is_catchall)
-                if is_catchall:
-                    logger.info(f"Target {target} is a dns catchall domain, skipping subdomain permutation.")
-                    return
-                elif is_catchall is None:
-                    logger.error(f"Failed to check if target {target} is a dns catchall domain.")
-                    return
-            async for message in plugin_execute(target=target):
-                # Publish each reverse_resolve_ip task
-                message["program_id"] = program_id
-                message["execution_id"] = execution_id
-                await self.qm.publish_message(subject="function.execute", stream="FUNCTION_EXECUTE", message=message)
-                yield message
-        else:
-            async for result in plugin_execute(target, program_id, execution_id):
-                if isinstance(result, str):
-                    result = json.loads(result)
-                output_data = {
-                    "program_id": program_id,
-                    "execution_id": execution_id,
-                    "source": {"function": func_name, "target": target, "force": force_execution},
-                    "output": result,
-                    "timestamp": timestamp
-                }
-                logger.info(f"Publishing message: {output_data}")
-                # Publish the result
-                await self.qm.publish_message(subject="function.output", stream="FUNCTION_OUTPUT", message=output_data)
+        async for result in plugin_execute(target, program_id, execution_id):
+            if isinstance(result, str):
+                result = json.loads(result)
+            output_data = {
+                "program_id": program_id,
+                "execution_id": execution_id,
+                "source": {"function": func_name, "target": target, "force": force_execution},
+                "output": result,
+                "timestamp": timestamp
+            }
+            logger.info(f"Publishing message: {output_data}")
+            # Publish the result
+            await self.qm.publish_message(subject="function.output", stream="FUNCTION_OUTPUT", message=output_data)
 
-                
-                yield output_data
+            
+            yield output_data

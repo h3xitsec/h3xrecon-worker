@@ -30,7 +30,7 @@ class SubdomainPermutation(ReconPlugin):
             to_test.append(output)
 
         message = {
-            "function_name": "resolve_domain",
+            "function": "resolve_domain",
             "target": target,
             "to_test": to_test
         }
@@ -41,12 +41,12 @@ class SubdomainPermutation(ReconPlugin):
     async def process_output(self, output_msg: Dict[str, Any]) -> Dict[str, Any]:
         self.config = Config()
         self.qm = QueueManager(self.config.nats)
-        self.db = DatabaseManager(self.config)
+        self.db = DatabaseManager(self.config.database.to_dict())
         is_catchall = await self.db.execute_query("SELECT is_catchall FROM domains WHERE domain = $1", output_msg.get("output").get("target"))
         logger.info(is_catchall)
-        if is_catchall:
+        if is_catchall[0].get("is_catchall"):
             logger.info(f"Target {output_msg.get('output').get('target')} is a dns catchall domain, skipping subdomain permutation processing.")
-        elif is_catchall is None:
+        elif is_catchall[0].get("is_catchall") is None:
             logger.info(f"Failed to check if target {output_msg.get('output').get('target')} is a dns catchall domain.")
             await self.qm.publish_message(
                 subject="function.execute",
@@ -64,7 +64,7 @@ class SubdomainPermutation(ReconPlugin):
                     subject="function.execute",
                     stream="FUNCTION_EXECUTE",
                     message={
-                        "function": output_msg.get("output").get("function_name"),
+                        "function": output_msg.get("output").get("function"),
                         "program_id": output_msg.get("program_id"),
                         "params": {"target": t},
                         "force": False

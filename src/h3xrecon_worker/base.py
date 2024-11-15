@@ -61,10 +61,9 @@ class Worker:
             if not msg.get("force", False):
                 if not await self.should_execute(msg):
                     return
-            logger.info(f"Processing function: {msg.get('function')} for target: {msg.get('params', {}).get('target')}")
             
             execution_id = msg.get("execution_id", str(uuid.uuid4()))
-            
+
             async for result in self.function_executor.execute_function(
                     func_name=msg["function"],
                     target=msg["params"]["target"],
