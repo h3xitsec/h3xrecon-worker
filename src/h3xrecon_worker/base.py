@@ -30,16 +30,23 @@ class Worker:
 
     async def start(self):
         logger.info(f"Starting worker (Worker ID: {self.worker_id})...")
-        logger.info(f"Worker {self.worker_id} listening for messages...")
         
-        await self.qm.connect()
-        await self.qm.subscribe(
-            subject="function.execute",
-            stream="FUNCTION_EXECUTE",
-            durable_name="MY_CONSUMER",
-            message_handler=self.message_handler,
-            batch_size=1
-        )
+        try:
+            await self.qm.connect()
+            await self.qm.subscribe(
+                subject="function.execute",
+                stream="FUNCTION_EXECUTE",
+                durable_name="MY_CONSUMER",
+                message_handler=self.message_handler,
+                batch_size=1
+            )
+            logger.info(f"Worker {self.worker_id} listening for messages...")
+        except ConnectionError as e:
+            logger.error(str(e))
+            sys.exit(1)
+        except Exception as e:
+            logger.error(f"Failed to start worker: {str(e)}")
+            sys.exit(1)
 
     async def should_execute(self, msg) -> bool:
         data = msg
