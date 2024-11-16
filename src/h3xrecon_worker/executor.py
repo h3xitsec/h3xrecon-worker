@@ -1,5 +1,5 @@
 from typing import Dict, Any, AsyncGenerator, List, Callable
-from h3xrecon_worker.plugins.base import ReconPlugin
+from h3xrecon_plugins import ReconPlugin
 from h3xrecon_core import QueueManager
 from h3xrecon_core import DatabaseManager
 from h3xrecon_core import Config
@@ -23,7 +23,7 @@ class FunctionExecutor():
     def load_plugins(self):
         """Dynamically load all recon plugins."""
         try:
-            package = importlib.import_module('h3xrecon_worker.plugins')
+            package = importlib.import_module('h3xrecon_plugins')
             logger.debug(f"Found plugin package at: {package.__path__}")
             
             # Walk through all subdirectories
