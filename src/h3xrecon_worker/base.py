@@ -21,27 +21,32 @@ class Worker:
         self.function_executor = FunctionExecutor(qm=self.qm, db=self.db, config=self.config)
         self.execution_threshold = timedelta(hours=24)
         self.result_publisher = None
-        redis_config = config.redis
         self.redis_client = redis.Redis(
-            host=redis_config.host,
-            port=redis_config.port,
-            db=redis_config.db,
-            password=redis_config.password
+            host=config.redis.host,
+            port=config.redis.port,
+            db=config.redis.db,
+            password=config.redis.password
         )
-
 
     async def start(self):
         logger.info(f"Starting worker (Worker ID: {self.worker_id})...")
-        logger.info(f"Worker {self.worker_id} listening for messages...")
         
-        await self.qm.connect()
-        await self.qm.subscribe(
-            subject="function.execute",
-            stream="FUNCTION_EXECUTE",
-            durable_name="MY_CONSUMER",
-            message_handler=self.message_handler,
-            batch_size=1
-        )
+        try:
+            await self.qm.connect()
+            await self.qm.subscribe(
+                subject="function.execute",
+                stream="FUNCTION_EXECUTE",
+                durable_name="MY_CONSUMER",
+                message_handler=self.message_handler,
+                batch_size=1
+            )
+            logger.info(f"Worker {self.worker_id} listening for messages...")
+        except ConnectionError as e:
+            logger.error(str(e))
+            sys.exit(1)
+        except Exception as e:
+            logger.error(f"Failed to start worker: {str(e)}")
+            sys.exit(1)
 
     async def should_execute(self, msg) -> bool:
         data = msg
@@ -52,22 +57,20 @@ class Worker:
             time_since_last_execution = datetime.now(timezone.utc) - last_execution_time
             skip = not time_since_last_execution > self.execution_threshold
             if skip:
-                logger.info(f"Skipping execution of {data.get('function')} on {data.get('params', {}).get('target')} as it was executed recently.")
+                logger.info(f"Skipping {data.get('function')} on {data.get('params', {}).get('target')} : executed recently.")
             else:
-                logger.info(f"Executing {data.get('function')} on {data.get('params', {}).get('target')} ({data.get('execution_id')})")
+                logger.info(f"Running {data.get('function')} on {data.get('params', {}).get('target')} ({data.get('execution_id')})")
             return not skip
         return True
 
     async def message_handler(self, msg):
-        #logger.debug(f"Incoming message:\nObject Type: {type(msg)}\nObject:\n{json.dumps(msg, indent=4)}")
         try:
             if not msg.get("force", False):
                 if not await self.should_execute(msg):
                     return
-            logger.info(f"Processing function: {msg.get('function')} for target: {msg.get('params', {}).get('target')}")
             
             execution_id = msg.get("execution_id", str(uuid.uuid4()))
-            
+
             async for result in self.function_executor.execute_function(
                     func_name=msg["function"],
                     target=msg["params"]["target"],
@@ -77,7 +80,6 @@ class Worker:
                     force_execution=msg.get("force_execution", False)
                 ):
                 pass
-                #logger.debug(f"Function execution result: {result}")
                     
         except Exception as e:
             logger.error(f"Error processing message: {e}")
@@ -96,8 +98,4 @@ async def main():
         await worker.stop()
 
 if __name__ == "__main__":
-    # Configure logger
-    logger.remove()
-    logger.add(sys.stdout, level="DEBUG", format="<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <level>{message}</level>")
-    
     asyncio.run(main())

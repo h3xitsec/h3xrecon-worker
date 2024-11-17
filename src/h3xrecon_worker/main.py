@@ -6,29 +6,32 @@ import asyncio
 from loguru import logger
 from h3xrecon_core.config import Config
 from h3xrecon_worker.base import Worker
+import sys
 
 async def main():
-    # Load configuration
-    config = Config()
-    config.setup_logging()
-    logger.info("Starting H3XRecon worker...")
-
-    # Initialize and start worker
-    worker = Worker(config)
-    
     try:
-        await worker.start()
+        # Load configuration
+        config = Config()
+        config.setup_logging()
+        logger.info("Starting H3XRecon worker...")
+
+        # Initialize and start worker
+        worker = Worker(config)
         
-        # Keep the worker running
-        while True:
-            await asyncio.sleep(1)
+        try:
+            await worker.start()
             
-    except KeyboardInterrupt:
-        logger.info("Shutting down worker...")
-        await worker.stop()
+            # Keep the worker running
+            while True:
+                await asyncio.sleep(1)
+                
+        except KeyboardInterrupt:
+            logger.info("Shutting down worker...")
+            await worker.stop()
+            
     except Exception as e:
-        logger.exception(f"Worker error: {e}")
-        raise
+        logger.error(f"Critical error: {str(e)}")
+        sys.exit(1)
     finally:
         logger.info("Worker shutdown complete")
 
