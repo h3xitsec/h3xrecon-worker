@@ -29,5 +29,5 @@ allow-direct-references = true
 [project.scripts]
 h3xrecon-worker = "h3xrecon_worker.main:run"
 
-[tool.setuptools]
-py-modules = ["h3xrecon_worker"]
+[tool.hatch.build]
+packages = ["h3xrecon_worker"]
