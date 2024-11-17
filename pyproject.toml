@@ -30,4 +30,4 @@ allow-direct-references = true
 h3xrecon-worker = "h3xrecon_worker.main:run"
 
 [tool.hatch.build]
-packages = ["h3xrecon_worker"]
+packages = ["src/h3xrecon_worker"]
