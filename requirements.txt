@@ -1,0 +1,7 @@
+asyncpg==0.30.0
+loguru==0.7.2
+nats-py==2.9.0
+python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
+redis==5.2.0
+six==1.16.0

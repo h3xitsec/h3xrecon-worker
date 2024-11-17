@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "h3xrecon_worker"
+version = "0.0.1"
+description = "Worker component for h3xrecon bug bounty reconnaissance automation"
+authors = [
+    { name = "h3xitsec", email = "connect@h3x.it" },
+]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "asyncpg==0.30.0",
+    "loguru==0.7.2",
+    "nats-py==2.9.0",
+    "python-dateutil==2.9.0.post0",
+    "python-dotenv==1.0.1",
+    "redis==5.2.0",
+    "six==1.16.0",
+    "h3xrecon_core @ git+https://github.com/h3xitsec/h3xrecon-core.git@v0.0.1",
+    "h3xrecon_plugins @ git+https://github.com/h3xitsec/h3xrecon-plugins.git@v0.0.1"
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project.scripts]
+h3xrecon-worker = "h3xrecon_worker.main:run"

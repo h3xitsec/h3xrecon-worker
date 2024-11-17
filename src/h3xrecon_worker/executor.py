@@ -32,7 +32,7 @@ class FunctionExecutor():
                 if not name.endswith('.base'):  # Skip the base module
                     plugin_modules.append(name)
             
-            logger.debug(f"Discovered modules: {plugin_modules}")
+            logger.info(f"Loaded plugins: {plugin_modules}")
             
         except ModuleNotFoundError as e:
             logger.error(f"Failed to import 'plugins': {e}")
@@ -52,7 +52,7 @@ class FunctionExecutor():
                         
                     plugin_instance = attribute()
                     self.function_map[plugin_instance.name] = plugin_instance.execute
-                    logger.info(f"Loaded plugin: {plugin_instance.name}")
+                    logger.debug(f"Loaded plugin: {plugin_instance.name}")
                 
                 
             except Exception as e:
@@ -81,7 +81,7 @@ class FunctionExecutor():
                 "output": result,
                 "timestamp": timestamp
             }
-            logger.info(f"Publishing message: {output_data}")
+            logger.info(f"Finished running {func_name} on {target} ({execution_id})")
             # Publish the result
             await self.qm.publish_message(subject="function.output", stream="FUNCTION_OUTPUT", message=output_data)
 

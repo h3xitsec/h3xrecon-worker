@@ -57,9 +57,9 @@ class Worker:
             time_since_last_execution = datetime.now(timezone.utc) - last_execution_time
             skip = not time_since_last_execution > self.execution_threshold
             if skip:
-                logger.info(f"Skipping execution of {data.get('function')} on {data.get('params', {}).get('target')} as it was executed recently.")
+                logger.info(f"Skipping {data.get('function')} on {data.get('params', {}).get('target')} : executed recently.")
             else:
-                logger.info(f"Executing {data.get('function')} on {data.get('params', {}).get('target')} ({data.get('execution_id')})")
+                logger.info(f"Running {data.get('function')} on {data.get('params', {}).get('target')} ({data.get('execution_id')})")
             return not skip
         return True
 
