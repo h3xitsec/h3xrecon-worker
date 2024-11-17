@@ -42,15 +42,6 @@ jobs:
             h3xrecon-worker/dist/*.whl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
-  build-docker-images:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout worker repository
-        uses: actions/checkout@v3
-        with:
-          repository: h3xitsec/h3xrecon-worker
-          path: h3xrecon-worker
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
