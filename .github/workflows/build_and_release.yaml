@@ -1,4 +1,4 @@
-name: h3xrecon-worker build and release
+name: Build and Release Worker Module and Docker Image
 
 on:
   workflow_dispatch:
