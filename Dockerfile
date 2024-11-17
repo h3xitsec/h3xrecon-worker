@@ -24,6 +24,4 @@ RUN rm -rf /app/venv && \
     python3 -m venv /app/venv && \
     /app/venv/bin/pip install https://github.com/h3xitsec/h3xrecon-worker/releases/download/v0.0.1/h3xrecon_worker-0.0.1-py3-none-any.whl
 
-COPY entrypoint.sh /entrypoint.sh
-
-RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/app/venv/bin/python3", "-m", "h3xrecon_worker.main"]
