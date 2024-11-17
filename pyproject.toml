@@ -20,8 +20,7 @@ dependencies = [
     "redis==5.2.0",
     "six==1.16.0",
     "https://github.com/h3xitsec/h3xrecon-core/releases/download/v0.0.1/h3xrecon_core-0.0.1-py3-none-any.whl",
-    "https://github.com/h3xitsec/h3xrecon-plugins/releases/download/v0.0.1/h3xrecon_plugins-0.0.1-py3-none-any.whl"
-
+    "https://github.com/h3xitsec/h3xrecon-plugins/releases/download/v0.0.1/h3xrecon_plugins-0.0.1-py3-none-any.whl",
 ]
 
 [tool.hatch.metadata]
