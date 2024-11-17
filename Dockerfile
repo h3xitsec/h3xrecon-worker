@@ -22,7 +22,7 @@ RUN go install github.com/Josue87/gotator@latest
 
 RUN rm -rf /app/venv && \
     python3 -m venv /app/venv && \
-    /app/venv/bin/pip install https://github.com/h3xitsec/h3xrecon-worker/releases/download/v0.0.1/h3xrecon_worker-0.0.1-py3-none-any.whl > /dev/null 2>&1
+    /app/venv/bin/pip install https://github.com/h3xitsec/h3xrecon-worker/releases/download/v0.0.1/h3xrecon_worker-0.0.1-py3-none-any.whl
 
 COPY entrypoint.sh /entrypoint.sh
 

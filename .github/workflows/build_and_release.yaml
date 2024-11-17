@@ -1,4 +1,4 @@
-name: Build and Release
+name: h3xrecon-worker build and release
 
 on:
   workflow_dispatch:
