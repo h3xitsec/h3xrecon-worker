@@ -22,6 +22,6 @@ RUN go install github.com/Josue87/gotator@latest
 
 RUN rm -rf /app/venv && \
     python3 -m venv /app/venv && \
-    /app/venv/bin/pip install https://github.com/h3xitsec/h3xrecon-worker/releases/download/v0.0.1/h3xrecon_worker-0.0.1-py3-none-any.whl
+    /app/venv/bin/pip install https://github.com/h3xitsec/h3xrecon-plugins/releases/download/v0.0.1/h3xrecon_plugins-0.0.1-py3-none-any.whl
 
 ENTRYPOINT ["/app/venv/bin/python3", "-m", "h3xrecon_worker.main"]
