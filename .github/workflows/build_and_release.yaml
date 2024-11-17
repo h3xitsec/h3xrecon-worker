@@ -17,6 +17,7 @@ jobs:
         with:
           repository: h3xitsec/h3xrecon-worker
           path: h3xrecon-worker
+          ref: ${{ github.ref }}
       
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -55,15 +56,19 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+    
       - name: Checkout worker repository
         uses: actions/checkout@v3
         with:
           repository: h3xitsec/h3xrecon-worker
           path: docker-worker
+          ref: ${{ github.ref }}
+      
       - run: |
           pwd
           ls -la
           ls -la docker-worker
+      
       - name: Build and push h3xrecon-worker image
         uses: docker/build-push-action@v4
         with:
