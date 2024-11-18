@@ -76,7 +76,7 @@ jobs:
       - name: Build and push h3xrecon-worker image
         uses: docker/build-push-action@v4
         with:
-          context: ./h3xrecon-worker
+          context: ./
           file: ./h3xrecon-worker/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/h3xrecon_worker:v0.0.1

@@ -20,9 +20,9 @@ RUN git clone https://github.com/UnaPibaGeek/ctfr.git /opt/ctfr && \
 
 RUN go install github.com/Josue87/gotator@latest
 
-COPY ../h3xrecon-core/src/h3xrecon_core /app/h3xrecon_core
-COPY ../h3xrecon-plugins/src/h3xrecon_plugins /app/h3xrecon_plugins
-COPY ./src/h3xrecon_worker /app/h3xrecon_worker
+COPY ./h3xrecon-core/src/h3xrecon_core /app/h3xrecon_core
+COPY ./h3xrecon-plugins/src/h3xrecon_plugins /app/h3xrecon_plugins
+COPY ./h3xrecon-worker/src/h3xrecon_worker /app/h3xrecon_worker
 
 RUN rm -rf /app/venv && \
     python3 -m venv /app/venv && \
