@@ -20,8 +20,11 @@ RUN git clone https://github.com/UnaPibaGeek/ctfr.git /opt/ctfr && \
 
 RUN go install github.com/Josue87/gotator@latest
 
+COPY ../h3xrecon-core/src/h3xrecon_core /app/h3xrecon_core
+COPY ../h3xrecon-plugins/src/h3xrecon_plugins /app/h3xrecon_plugins
+COPY ./src/h3xrecon_worker /app/h3xrecon_worker
+
 RUN rm -rf /app/venv && \
-    python3 -m venv /app/venv && \
-    /app/venv/bin/pip install https://github.com/h3xitsec/h3xrecon-plugins/releases/download/v0.0.1/h3xrecon_plugins-0.0.1-py3-none-any.whl
+    python3 -m venv /app/venv
 
 ENTRYPOINT ["/app/venv/bin/python3", "-m", "h3xrecon_worker.main"]

@@ -60,8 +60,14 @@ jobs:
       - name: Checkout worker repository
         uses: actions/checkout@v3
         with:
-          repository: h3xitsec/h3xrecon-worker
-          path: docker-worker
+          repository: h3xitsec/h3xrecon-core
+          path: docker-core
+          ref: ${{ github.ref }}
+      - name: Checkout plugins repository
+        uses: actions/checkout@v3
+        with:
+          repository: h3xitsec/h3xrecon-plugins
+          path: docker-plugins
           ref: ${{ github.ref }}
       
       - run: |
