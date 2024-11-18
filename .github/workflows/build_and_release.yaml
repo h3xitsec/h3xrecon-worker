@@ -19,6 +19,20 @@ jobs:
           path: h3xrecon-worker
           ref: ${{ github.ref }}
       
+      - name: Checkout core repository
+        uses: actions/checkout@v3
+        with:
+          repository: h3xitsec/h3xrecon-core
+          path: h3xrecon-core
+          ref: ${{ github.ref }}
+      
+      - name: Checkout plugins repository
+        uses: actions/checkout@v3
+        with:
+          repository: h3xitsec/h3xrecon-plugins
+          path: h3xrecon-plugins
+          ref: ${{ github.ref }}
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -56,30 +70,12 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-    
-      - name: Checkout worker repository
-        uses: actions/checkout@v3
-        with:
-          repository: h3xitsec/h3xrecon-core
-          path: docker-core
-          ref: ${{ github.ref }}
-      - name: Checkout plugins repository
-        uses: actions/checkout@v3
-        with:
-          repository: h3xitsec/h3xrecon-plugins
-          path: docker-plugins
-          ref: ${{ github.ref }}
-      
-      - run: |
-          pwd
-          ls -la
-          ls -la docker-worker
       
       - name: Build and push h3xrecon-worker image
         uses: docker/build-push-action@v4
         with:
-          context: ./docker-worker
-          file: ./docker-worker/Dockerfile
+          context: ./h3xrecon-worker
+          file: ./h3xrecon-worker/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/h3xrecon_worker:v0.0.1
           cache-from: type=gha
