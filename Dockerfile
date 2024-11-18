@@ -26,6 +26,6 @@ COPY ./h3xrecon-worker/src/h3xrecon_worker /app/h3xrecon_worker
 
 RUN rm -rf /app/venv && \
     python3 -m venv /app/venv && \
-    /app/venv/bin/pip install -r h3xrecon_worker/requirements.txt
+    /app/venv/bin/pip install -r h3xrecon-worker/requirements.txt
 
 ENTRYPOINT ["/app/venv/bin/python3", "-m", "h3xrecon_worker.main"]
