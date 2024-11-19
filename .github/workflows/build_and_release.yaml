@@ -32,10 +32,7 @@ jobs:
           repository: h3xitsec/h3xrecon-plugins
           path: h3xrecon-plugins
           ref: ${{ github.ref }}
-      - run: |
-          pwd
-          ls -la
-          ls -la h3xrecon-worker
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
