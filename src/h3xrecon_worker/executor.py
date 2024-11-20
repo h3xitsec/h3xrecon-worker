@@ -81,9 +81,9 @@ class FunctionExecutor():
                 "output": result,
                 "timestamp": timestamp
             }
-            logger.info(f"Finished running {func_name} on {target} ({execution_id})")
             # Publish the result
             await self.qm.publish_message(subject="function.output", stream="FUNCTION_OUTPUT", message=output_data)
 
             
             yield output_data
+        logger.info(f"Finished running {func_name} on {target} ({execution_id})")

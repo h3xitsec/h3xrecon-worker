@@ -14,7 +14,7 @@ from h3xrecon_core import Config
 class Worker:
     def __init__(self, config: Config):
         self.qm = QueueManager(config.nats)
-        self.db = DatabaseManager(config.database.to_dict() )
+        self.db = DatabaseManager() #config.database.to_dict() )
         self.config = config
         self.config.setup_logging()
         self.worker_id = f"worker-{os.getenv('HOSTNAME')}"
