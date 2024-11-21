@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
   workflow_call:
   push:
-    tags:
-      - v0.*
-
+    branches:
+      - release/*
 
 permissions:
   packages: write
