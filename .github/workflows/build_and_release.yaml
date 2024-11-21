@@ -31,9 +31,11 @@ jobs:
       - name: Install build dependencies
         working-directory: h3xrecon-worker
         run: |
+          pwd
+          ls -laR
           python -m pip install --upgrade pip
           pip install build
-          pip install -r h3xrecon-worker/h3xrecon-worker/requirements.txt
+          pip install -r requirements.txt
       
       - name: Get versions from __about__.py
         id: get_version
