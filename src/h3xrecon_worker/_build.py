@@ -8,11 +8,12 @@ class VersionReplacementHook(MetadataHookInterface):
         Update the metadata with version replacements
         """
         about = {}
-        # Get the absolute path to the current file's directory
-        current_dir = Path(__file__).resolve().parent
-        about_path = current_dir / "__about__.py"
+        # Use the root directory provided by Hatch
+        about_path = Path(self.root) / "src" / "h3xrecon_worker" / "__about__.py"
         
-        print(f"Looking for __about__.py at: {about_path}")  # Debug line
+        print(f"Root directory: {self.root}")
+        print(f"Looking for __about__.py at: {about_path}")
+        print(f"File exists: {about_path.exists()}")
         
         if not about_path.exists():
             raise FileNotFoundError(f"Could not find __about__.py at {about_path}")
