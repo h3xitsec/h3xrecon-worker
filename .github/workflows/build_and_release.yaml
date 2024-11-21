@@ -23,6 +23,18 @@ jobs:
           path: h3xrecon-worker
           ref: ${{ github.ref }}
       
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12.7'
+          
+      - name: Install build dependencies
+        working-directory: h3xrecon-worker
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+          pip install -r h3xrecon-worker/requirements.txt
+      
       - name: Get versions from __about__.py
         id: get_version
         working-directory: h3xrecon-worker
@@ -46,17 +58,6 @@ jobs:
           repository: h3xitsec/h3xrecon-plugins
           path: h3xrecon-plugins
           ref: ${{ github.ref }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12.7'
-          
-      - name: Install build dependencies
-        working-directory: h3xrecon-worker
-        run: |
-          python -m pip install --upgrade pip
-          pip install build
 
       - name: Build package
         working-directory: h3xrecon-worker
