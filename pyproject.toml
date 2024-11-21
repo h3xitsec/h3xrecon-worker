@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "h3xrecon_worker"
-version = "0.0.1"
+dynamic = ["version"]
 description = "Worker component for h3xrecon bug bounty reconnaissance automation"
 authors = [
     { name = "h3xitsec", email = "connect@h3x.it" },
@@ -22,9 +22,11 @@ dependencies = [
     "h3xrecon_core @ git+https://github.com/h3xitsec/h3xrecon-core.git@v0.0.2",
     "h3xrecon_plugins @ git+https://github.com/h3xitsec/h3xrecon-plugins.git@v0.0.2"
 ]
-
 [tool.hatch.metadata]
 allow-direct-references = true
+
+[tool.hatch.version]
+path = "src/h3xrecon_worker/__about__.py"
 
 [project.scripts]
 h3xrecon-worker = "h3xrecon_worker.main:run"
