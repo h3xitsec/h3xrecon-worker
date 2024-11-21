@@ -8,9 +8,16 @@ class VersionReplacementHook(MetadataHookInterface):
         Update the metadata with version replacements
         """
         about = {}
-        about_path = Path(__file__).parent / "__about__.py"
+        # Get the absolute path to the current file's directory
+        current_dir = Path(__file__).resolve().parent
+        about_path = current_dir / "__about__.py"
         
-        with open(about_path, "r") as f:
+        print(f"Looking for __about__.py at: {about_path}")  # Debug line
+        
+        if not about_path.exists():
+            raise FileNotFoundError(f"Could not find __about__.py at {about_path}")
+        
+        with about_path.open("r") as f:
             exec(f.read(), about)
         
         if "dependencies" in metadata:
