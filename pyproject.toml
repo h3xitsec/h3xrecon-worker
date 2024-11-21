@@ -26,7 +26,7 @@ dependencies = [
 allow-direct-references = true
 
 [tool.hatch.metadata.hooks.custom]
-path = "src/h3xrecon_worker/_build.py"
+path = "./src/h3xrecon_worker/_build.py"
 function = "VersionReplacementHook"
 
 [tool.hatch.version]
