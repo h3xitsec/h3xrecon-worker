@@ -23,22 +23,22 @@ dependencies = [
     "h3xrecon_plugins @ git+https://github.com/h3xitsec/h3xrecon-plugins.git@v___PLUGINVERSION___"
 ]
 
+[tool.hatch.version]
+path = "src/h3xrecon_worker/__about__.py"
+pattern = "__version__ = \"(?P<version>[^\"]+)\""
+
 [tool.hatch.metadata]
 allow-direct-references = true
 
 [tool.hatch.metadata.hooks.custom]
-path = "src/h3xrecon_worker/_build.py"
+path = "build_hooks/version_hook.py"
 function = "VersionReplacementHook"
-
-[tool.hatch.version]
-path = "src/h3xrecon_worker/__about__.py"
-
-[project.scripts]
-h3xrecon-worker = "h3xrecon_worker.main:run"
 
 [tool.hatch.build]
 packages = ["src/h3xrecon_worker"]
 artifacts = [
-    "src/h3xrecon_worker/_build.py",
     "src/h3xrecon_worker/__about__.py"
 ]
+
+[project.scripts]
+h3xrecon-worker = "h3xrecon_worker.main:run"
