@@ -64,7 +64,7 @@ jobs:
           ref: ${{ steps.get_version.outputs.plugin_version }}
 
       - name: Build package
-        working-directory: h3xrecon-worker
+        #working-directory: h3xrecon-worker
         run: |
           python -m build
         
