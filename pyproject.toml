@@ -22,6 +22,7 @@ dependencies = [
     "h3xrecon_core @ git+https://github.com/h3xitsec/h3xrecon-core.git@v___COREVERSION___",
     "h3xrecon_plugins @ git+https://github.com/h3xitsec/h3xrecon-plugins.git@v___PLUGINVERSION___"
 ]
+
 [tool.hatch.metadata]
 allow-direct-references = true
 
@@ -37,3 +38,7 @@ h3xrecon-worker = "h3xrecon_worker.main:run"
 
 [tool.hatch.build]
 packages = ["src/h3xrecon_worker"]
+artifacts = [
+    "src/h3xrecon_worker/_build.py",
+    "src/h3xrecon_worker/__about__.py"
+]

@@ -1,6 +1,7 @@
 from hatchling.metadata.plugin.interface import MetadataHookInterface
 from pathlib import Path
 from typing import Any, Dict
+import os
 
 class VersionReplacementHook(MetadataHookInterface):
     def update(self, metadata: Dict[str, Any]) -> None:
@@ -8,15 +9,23 @@ class VersionReplacementHook(MetadataHookInterface):
         Update the metadata with version replacements
         """
         about = {}
-        # Use the root directory provided by Hatch
-        about_path = Path(self.root) / "src" / "h3xrecon_worker" / "__about__.py"
+        # Try multiple possible locations for the about file
+        possible_paths = [
+            Path(self.root) / "src" / "h3xrecon_worker" / "__about__.py",
+            Path(self.root) / "h3xrecon_worker" / "__about__.py",
+        ]
         
-        print(f"Root directory: {self.root}")
-        print(f"Looking for __about__.py at: {about_path}")
-        print(f"File exists: {about_path.exists()}")
-        
-        if not about_path.exists():
-            raise FileNotFoundError(f"Could not find __about__.py at {about_path}")
+        about_path = None
+        for path in possible_paths:
+            print(f"Checking path: {path}")
+            if path.exists():
+                about_path = path
+                break
+                
+        if about_path is None:
+            raise FileNotFoundError(f"Could not find __about__.py in any of: {possible_paths}")
+            
+        print(f"Using about.py from: {about_path}")
         
         with about_path.open("r") as f:
             exec(f.read(), about)
