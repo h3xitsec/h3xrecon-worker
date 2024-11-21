@@ -6,6 +6,7 @@ import asyncio
 from loguru import logger
 from h3xrecon_core.config import Config
 from h3xrecon_worker.base import Worker
+from h3xrecon_worker.__about__ import __version__
 import sys
 
 async def main():
@@ -13,7 +14,7 @@ async def main():
         # Load configuration
         config = Config()
         config.setup_logging()
-        logger.info("Starting H3XRecon worker...")
+        logger.info(f"Starting H3XRecon worker... (v{__version__})")
 
         # Initialize and start worker
         worker = Worker(config)
