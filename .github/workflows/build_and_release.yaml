@@ -53,14 +53,14 @@ jobs:
         with:
           repository: h3xitsec/h3xrecon-core
           path: h3xrecon-core
-          ref: ${{ github.ref }}
+          ref: v${{ steps.get_version.outputs.core_version }}
       
       - name: Checkout plugins repository
         uses: actions/checkout@v3
         with:
           repository: h3xitsec/h3xrecon-plugins
           path: h3xrecon-plugins
-          ref: ${{ github.ref }}
+          ref: v${{ steps.get_version.outputs.plugin_version }}
 
       - name: Build package
         working-directory: h3xrecon-worker
