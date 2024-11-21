@@ -60,12 +60,24 @@ jobs:
           repository: h3xitsec/h3xrecon-plugins
           path: h3xrecon-plugins
           ref: ${{ steps.get_version.outputs.plugin_version }}
-
+      # Add these debug steps before the build
+      - name: Debug Directory Structure
+        working-directory: h3xrecon-worker
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Directory contents:"
+          ls -la
+          echo "src directory contents:"
+          ls -la src/
+          echo "h3xrecon_worker directory contents:"
+          ls -la src/h3xrecon_worker/
+          echo "Build script exists check:"
+          test -f src/h3xrecon_worker/_build.py && echo "Build script exists" || echo "Build script not found"
+          echo "Build script contents:"
+          cat src/h3xrecon_worker/_build.py
       - name: Build package
         working-directory: h3xrecon-worker
         run: |
-          pwd
-          ls -laR
           python -m build
         
       - name: Create Release
