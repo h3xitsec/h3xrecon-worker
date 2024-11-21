@@ -48,6 +48,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install build
       
+      - name: Get Version
+        id: get_version
+        working-directory: h3xrecon-worker
+        run: |
+          VERSION=$(python -c "import sys; sys.path.append('src'); from h3xrecon_worker.__about__ import __version__; print(f'v{__version__}')")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Build package
         working-directory: h3xrecon-worker
         run: |
@@ -56,7 +63,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v0.0.2
+          tag_name: ${{ steps.get_version.outputs.version }}
           files: |
             h3xrecon-worker/dist/*.whl
           repository: h3xitsec/h3xrecon
@@ -82,7 +89,7 @@ jobs:
           context: ./
           file: ./h3xrecon-worker/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/h3xrecon_worker:v0.0.2
+          tags: ghcr.io/${{ github.repository_owner }}/h3xrecon_worker:${{ steps.get_version.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64
