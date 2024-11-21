@@ -61,7 +61,7 @@ jobs:
             h3xrecon-worker/dist/*.whl
           repository: h3xitsec/h3xrecon
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GHA_PAT }}
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2

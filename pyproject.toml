@@ -19,8 +19,8 @@ dependencies = [
     "python-dotenv==1.0.1",
     "redis==5.2.0",
     "six==1.16.0",
-    "h3xrecon_core @ git+https://github.com/h3xitsec/h3xrecon-core.git",
-    "h3xrecon_plugins @ git+https://github.com/h3xitsec/h3xrecon-plugins.git"
+    "h3xrecon_core @ git+https://github.com/h3xitsec/h3xrecon-core.git@v0.0.2",
+    "h3xrecon_plugins @ git+https://github.com/h3xitsec/h3xrecon-plugins.git@v0.0.2"
 ]
 
 [tool.hatch.metadata]
