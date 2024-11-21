@@ -4,11 +4,6 @@ on:
   workflow_dispatch:
   workflow_call:
   push:
-    # Sequence of patterns matched against refs/heads
-    branches:
-      - main
-      - develop
-    # Sequence of patterns matched against refs/tags
     tags:
       - v0.*
 
@@ -66,7 +61,7 @@ jobs:
             h3xrecon-worker/dist/*.whl
           repository: h3xitsec/h3xrecon
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -80,10 +75,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
-          pwd
-          ls -la
-          ls -la h3xrecon-worker
+
       - name: Build and push h3xrecon-worker image
         uses: docker/build-push-action@v4
         with:
