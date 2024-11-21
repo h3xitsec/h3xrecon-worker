@@ -19,11 +19,15 @@ dependencies = [
     "python-dotenv==1.0.1",
     "redis==5.2.0",
     "six==1.16.0",
-    "h3xrecon_core @ git+https://github.com/h3xitsec/h3xrecon-core.git@___COREVERSION___",
-    "h3xrecon_plugins @ git+https://github.com/h3xitsec/h3xrecon-plugins.git@___PLUGINVERSION___"
+    "h3xrecon_core @ git+https://github.com/h3xitsec/h3xrecon-core.git@v___COREVERSION___",
+    "h3xrecon_plugins @ git+https://github.com/h3xitsec/h3xrecon-plugins.git@v___PLUGINVERSION___"
 ]
 [tool.hatch.metadata]
 allow-direct-references = true
+
+[tool.hatch.metadata.hooks.custom]
+path = "src/h3xrecon_worker/_build.py"
+function = "VersionReplacementHook"
 
 [tool.hatch.version]
 path = "src/h3xrecon_worker/__about__.py"
