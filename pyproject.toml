@@ -31,7 +31,7 @@ pattern = "__version__ = \"(?P<version>[^\"]+)\""
 allow-direct-references = true
 
 [tool.hatch.metadata.hooks.custom]
-path = "build_hooks/version_hook.py"
+path = "src/h3xrecon_worker/_build.py"
 function = "VersionReplacementHook"
 
 [tool.hatch.build]
