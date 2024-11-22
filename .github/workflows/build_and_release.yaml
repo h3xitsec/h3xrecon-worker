@@ -69,7 +69,17 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ steps.get_version.outputs.version }}
+          tag_name: ${{ steps.get_version.outputs.version }}
+          files: |
+            h3xrecon-worker/dist/*.whl
+          repository: h3xitsec/h3xrecon
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHA_PAT }}
+        
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.get_version.outputs.version }}
           files: |
             h3xrecon-worker/dist/*.whl
           repository: h3xitsec/h3xrecon-worker
