@@ -42,9 +42,9 @@ jobs:
           with open('src/h3xrecon_worker/__about__.py', 'r') as f: 
               exec(compile(f.read(), 'src/h3xrecon_worker/__about__.py', 'exec'), globals())
           print(f'all_versions1=Worker: v{__version__}, Core: v{__core_version__}, Plugins: v{__plugin_version__}')
-          print(f'version={__version__}')
-          print(f'core_version={__core_version__}')
-          print(f'plugin_version={__plugin_version__}')
+          print(f'version=v{__version__}')
+          print(f'core_version=v{__core_version__}')
+          print(f'plugin_version=v{__plugin_version__}')
           " >> $GITHUB_OUTPUT
       
       - name: Checkout core repository
@@ -52,7 +52,7 @@ jobs:
         with:
           repository: h3xitsec/h3xrecon-core
           path: h3xrecon-core
-          ref: v${{ steps.get_version.outputs.core_version }}
+          ref: ${{ steps.get_version.outputs.core_version }}
           token: ${{ secrets.GHA_PAT }}
       
       - name: Checkout plugins repository
@@ -60,7 +60,7 @@ jobs:
         with:
           repository: h3xitsec/h3xrecon-plugins
           path: h3xrecon-plugins
-          ref: v${{ steps.get_version.outputs.plugin_version }}
+          ref: ${{ steps.get_version.outputs.plugin_version }}
           token: ${{ secrets.GHA_PAT }}
 
       - name: Build package
