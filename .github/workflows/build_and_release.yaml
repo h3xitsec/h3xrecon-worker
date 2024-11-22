@@ -53,6 +53,7 @@ jobs:
           repository: h3xitsec/h3xrecon-core
           path: h3xrecon-core
           ref: v${{ steps.get_version.outputs.core_version }}
+          token: ${{ secrets.GHA_PAT }}
       
       - name: Checkout plugins repository
         uses: actions/checkout@v3
@@ -60,6 +61,7 @@ jobs:
           repository: h3xitsec/h3xrecon-plugins
           path: h3xrecon-plugins
           ref: v${{ steps.get_version.outputs.plugin_version }}
+          token: ${{ secrets.GHA_PAT }}
 
       - name: Build package
         working-directory: h3xrecon-worker
