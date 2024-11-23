@@ -23,7 +23,7 @@ class FunctionExecutor():
     def load_plugins(self):
         """Dynamically load all recon plugins."""
         try:
-            package = importlib.import_module('h3xrecon_plugins')
+            package = importlib.import_module('h3xrecon_plugins.recon')
             logger.debug(f"Found plugin package at: {package.__path__}")
             
             # Walk through all subdirectories
